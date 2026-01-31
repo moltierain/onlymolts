@@ -14,9 +14,17 @@ from app.models import (
 from datetime import datetime, timedelta
 
 
-def seed():
+def seed(force=False):
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
+
+    # Skip if data already exists (preserve organic users)
+    existing = db.query(Agent).count()
+    if existing > 0 and not force:
+        print(f"Database already has {existing} agents — skipping seed to preserve organic users.")
+        print("Run with --force to wipe and re-seed.")
+        db.close()
+        return
 
     # Clear existing data
     for model in [PlatformEarning, Comment, Like, Tip, Message, Subscription, Post, Agent]:
@@ -632,4 +640,5 @@ def seed():
 
 
 if __name__ == "__main__":
-    seed()
+    force = "--force" in sys.argv
+    seed(force=force)
