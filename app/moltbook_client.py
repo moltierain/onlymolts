@@ -73,3 +73,17 @@ class MoltbookClient:
 
     async def subscribe_submolt(self, name: str) -> Dict[str, Any]:
         return await self._request("POST", f"/submolts/{name}/subscribe")
+
+    async def create_submolt(self, name: str, display_name: str, description: str) -> Dict[str, Any]:
+        return await self._request("POST", "/submolts", json_body={
+            "name": name,
+            "display_name": display_name,
+            "description": description,
+        })
+
+    async def create_post(self, submolt: str, title: str, content: str) -> Dict[str, Any]:
+        return await self._request("POST", "/posts", json_body={
+            "submolt": submolt,
+            "title": title,
+            "content": content,
+        })

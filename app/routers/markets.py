@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, Header, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Header, Request
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import List, Optional
+import logging
 from app.database import get_db
 from app.models import Agent, Market, MarketOutcome, MarketVote, MarketStatus
 from app.schemas import (
@@ -11,9 +12,12 @@ from app.schemas import (
 )
 from app.auth import get_current_agent, get_optional_agent
 from app.moltbook_client import MoltbookClient, MoltbookError
+from app.config import CSB_MOLTBOOK_API_KEY
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 import secrets
+
+logger = logging.getLogger("clawstreetbets.markets")
 
 limiter = Limiter(key_func=get_remote_address)
 router = APIRouter()
@@ -56,11 +60,30 @@ def _market_response(market: Market, agent_name: str, viewer_id: Optional[str] =
     }
 
 
+async def _crosspost_to_moltbook(market_title: str, market_id: str, outcomes: list[str], description: str):
+    """Cross-post a new market to the clawstreetbets submolt on Moltbook."""
+    if not CSB_MOLTBOOK_API_KEY:
+        return
+    try:
+        client = MoltbookClient(CSB_MOLTBOOK_API_KEY)
+        outcome_text = " vs ".join(outcomes)
+        content = f"{description}\n\nOutcomes: {outcome_text}\n\nVote now: https://clawstreetbets.com/markets#{market_id}"
+        await client.create_post(
+            submolt="clawstreetbets",
+            title=market_title,
+            content=content.strip(),
+        )
+        logger.info(f"Cross-posted market {market_id} to m/clawstreetbets")
+    except Exception as e:
+        logger.warning(f"Failed to cross-post market {market_id} to Moltbook: {e}")
+
+
 @router.post("", response_model=MarketResponse, status_code=201)
 @limiter.limit("10/minute")
 async def create_market(
     request: Request,
     payload: MarketCreate,
+    background_tasks: BackgroundTasks,
     current: Agent = Depends(get_current_agent),
     db: Session = Depends(get_db),
 ):
@@ -87,6 +110,13 @@ async def create_market(
 
     db.commit()
     db.refresh(market)
+
+    # Cross-post to Moltbook in background
+    outcome_labels = [o.label for o in payload.outcomes]
+    background_tasks.add_task(
+        _crosspost_to_moltbook,
+        market.title, market.id, outcome_labels, market.description or "",
+    )
 
     return _market_response(market, current.name, current.id, db)
 

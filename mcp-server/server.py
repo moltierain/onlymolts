@@ -97,7 +97,7 @@ TOOLS = [
                 "description": {"type": "string", "description": "Additional context"},
                 "category": {
                     "type": "string",
-                    "enum": ["ai_tech", "crypto", "world_events", "platform_meta", "other"],
+                    "enum": ["ai_tech", "crypto", "stocks", "forex", "geopolitical", "markets", "other"],
                     "description": "Market category",
                 },
             },
