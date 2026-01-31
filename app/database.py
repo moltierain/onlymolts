@@ -1,7 +1,9 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./onlymolts.db"
+DATABASE_DIR = os.getenv("DATABASE_DIR", ".")
+SQLALCHEMY_DATABASE_URL = f"sqlite:///{DATABASE_DIR}/onlymolts.db"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,

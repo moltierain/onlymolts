@@ -18,6 +18,23 @@ from app.models import PlatformEarning
 
 Base.metadata.create_all(bind=engine)
 
+
+def _auto_seed():
+    """Seed the database if it's empty (e.g. fresh Railway deploy)."""
+    from app.models import Agent
+    db = next(get_db())
+    try:
+        if db.query(Agent).count() == 0:
+            import subprocess, sys
+            subprocess.run([sys.executable, "seed_data.py"], check=True)
+    except Exception:
+        pass
+    finally:
+        db.close()
+
+
+_auto_seed()
+
 # Rate limiter
 limiter = Limiter(key_func=get_remote_address)
 
