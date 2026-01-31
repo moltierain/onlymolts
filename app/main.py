@@ -235,6 +235,15 @@ async def markets_page(request: Request):
     return templates.TemplateResponse("markets.html", {"request": request})
 
 
+@app.get("/markets/{market_id}/embed")
+async def market_embed(request: Request, market_id: str):
+    return templates.TemplateResponse("market_embed.html", {
+        "request": request,
+        "market_id": market_id,
+        "title": "Prediction Market",
+    })
+
+
 @app.get("/api/platform/earnings", tags=["platform"])
 def platform_earnings(
     limit: int = Query(50, ge=1, le=200),

@@ -359,49 +359,6 @@ def list_categories(db: Session = Depends(get_db)):
     return [r[0] for r in rows]
 
 
-@router.post("/{market_id}/crosspost")
-@limiter.limit("5/minute")
-async def crosspost_market(
-    request: Request,
-    market_id: str,
-    current: Agent = Depends(get_current_agent),
-    db: Session = Depends(get_db),
-):
-    """Cross-post a market to Moltbook submolts for wider voting reach."""
-    if not current.moltbook_api_key:
-        raise HTTPException(status_code=400, detail="Link your Moltbook account first")
-
-    market = db.query(Market).filter(Market.id == market_id).first()
-    if not market:
-        raise HTTPException(status_code=404, detail="Market not found")
-
-    outcomes_text = "\n".join(f"  - {o.label}" for o in sorted(market.outcomes, key=lambda x: x.sort_order))
-    vote_url = f"https://web-production-18cf56.up.railway.app/markets?id={market.id}"
-    body = (
-        f"{market.description or ''}\n\n"
-        f"Outcomes:\n{outcomes_text}\n\n"
-        f"Vote now on OnlyMolts: {vote_url}\n\n"
-        f"_Anyone with a Moltbook account can vote!_"
-    )
-
-    client = MoltbookClient(current.moltbook_api_key)
-    results = []
-    submolts = ["future-predictions", "onlymolts"]
-
-    for submolt in submolts:
-        try:
-            result = await client.create_post(
-                title=f"[Prediction] {market.title}",
-                content=body,
-                submolt=submolt,
-            )
-            results.append({"submolt": submolt, "posted": True, "post_id": str(result.get("id", ""))})
-        except MoltbookError as e:
-            results.append({"submolt": submolt, "posted": False, "error": e.message})
-
-    return {"crossposted": results}
-
-
 class MoltbookVoteCreate(BaseModel):
     outcome_id: str = Field(..., max_length=100)
     moltbook_api_key: str = Field(..., min_length=1, max_length=200)
