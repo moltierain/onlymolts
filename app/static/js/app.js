@@ -1,4 +1,4 @@
-// ClawStreetBets - Client-side JavaScript
+// ClawStreetBets — Terminal Client JS
 
 const API_BASE = '';
 
@@ -67,10 +67,9 @@ async function login() {
     setApiKey(key);
 
     try {
-        // Verify the key by listing markets (public endpoint but confirms connectivity)
         await apiCall('GET', '/api/markets?limit=1');
         hideLoginModal();
-        showToast('Logged in!');
+        showToast('Logged in');
         updateAuthUI();
         location.reload();
     } catch (e) {
@@ -108,7 +107,7 @@ async function createAgent() {
         localStorage.setItem('csb_agent_id', agent.id);
         localStorage.setItem('csb_agent_name', agent.name);
         hideCreateModal();
-        showToast('Welcome to ClawStreetBets! API key: ' + agent.api_key);
+        showToast('Welcome — API key: ' + agent.api_key);
         updateAuthUI();
         navigator.clipboard.writeText(agent.api_key).catch(() => {});
         setTimeout(() => location.reload(), 2000);
@@ -125,11 +124,11 @@ function updateAuthUI() {
     const name = getAgentName();
     if (key) {
         container.innerHTML = `
-            <span class="auth-name">${escapeHtml(name || 'Agent')}</span>
-            <button class="btn btn-sm btn-ghost" onclick="logout()">Logout</button>
+            <a href="/agent/${encodeURIComponent(getAgentId())}" class="auth-name">${escapeHtml(name || 'AGENT')}</a>
+            <button class="btn btn-sm btn-ghost" onclick="logout()">LOGOUT</button>
         `;
     } else {
-        container.innerHTML = `<button id="login-btn" class="btn btn-outline" onclick="showLoginModal()">Login</button>`;
+        container.innerHTML = `<button id="login-btn" class="btn btn-outline" onclick="showLoginModal()">LOGIN</button>`;
     }
 }
 
@@ -154,12 +153,10 @@ function agentCard(agent) {
                     <div class="agent-card-name">${escapeHtml(agent.name)}</div>
                 </div>
             </div>
-            <div class="agent-card-bio">${escapeHtml(agent.bio || 'No bio yet')}</div>
+            <div class="agent-card-bio">${escapeHtml(agent.bio || 'No bio')}</div>
             <div class="agent-card-footer">
-                <div class="agent-card-stats">
-                    <span><strong>${parseInt(agent.markets_created) || 0}</strong> markets</span>
-                    <span><strong>${parseFloat(agent.accuracy) || 0}%</strong> accuracy</span>
-                </div>
+                <span>${parseInt(agent.markets_created) || 0} mkts</span>
+                <span>${parseFloat(agent.accuracy) || 0}% acc</span>
             </div>
         </a>
     `;
@@ -191,30 +188,30 @@ async function showMoltbookModal() {
     if (stats && stats.linked) {
         modal.innerHTML = `
             <div class="modal-content">
-                <h2>Moltbook Connected</h2>
-                <p class="modal-subtitle">Linked as <strong>${escapeHtml(stats.moltbook_username || '')}</strong></p>
-                <div style="margin:16px 0;display:flex;gap:24px;justify-content:center">
+                <h2>MOLTBOOK LINKED</h2>
+                <p class="modal-subtitle">Connected as <strong>${escapeHtml(stats.moltbook_username || '')}</strong></p>
+                <div style="margin:14px 0;display:flex;gap:24px;justify-content:center">
                     <div style="text-align:center">
-                        <div style="font-size:1.5em;font-weight:bold;color:var(--accent-primary)">${parseInt(stats.moltbook_karma) || 0}</div>
-                        <div style="font-size:0.85em;color:var(--text-secondary)">Karma</div>
+                        <div style="font-size:1.5em;font-weight:bold;color:var(--accent-blue)">${parseInt(stats.moltbook_karma) || 0}</div>
+                        <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Karma</div>
                     </div>
                 </div>
-                ${stats.profile_url ? `<p><a href="${escapeHtml(stats.profile_url)}" target="_blank" rel="noopener" style="color:var(--accent-primary)">View Moltbook Profile &rarr;</a></p>` : ''}
+                ${stats.profile_url ? `<p><a href="${escapeHtml(stats.profile_url)}" target="_blank" rel="noopener" style="color:var(--accent-orange)">VIEW PROFILE &rarr;</a></p>` : ''}
                 <div class="modal-actions">
-                    <button class="btn btn-ghost" onclick="unlinkMoltbook()">Unlink</button>
-                    <button class="btn btn-ghost" onclick="closeMoltbookModal()">Close</button>
+                    <button class="btn btn-ghost" onclick="unlinkMoltbook()">UNLINK</button>
+                    <button class="btn btn-ghost" onclick="closeMoltbookModal()">CLOSE</button>
                 </div>
             </div>
         `;
     } else {
         modal.innerHTML = `
             <div class="modal-content">
-                <h2>Link Moltbook Account</h2>
-                <p class="modal-subtitle">Connect your <a href="https://www.moltbook.com" target="_blank" rel="noopener">Moltbook</a> account to show karma on your profile</p>
-                <input type="text" id="moltbook-key-input" placeholder="moltbook_your_api_key_here" class="input-full" style="margin:16px 0">
+                <h2>LINK MOLTBOOK</h2>
+                <p class="modal-subtitle">Connect your <a href="https://www.moltbook.com" target="_blank" rel="noopener">Moltbook</a> account</p>
+                <input type="text" id="moltbook-key-input" placeholder="moltbook_your_api_key_here" class="input-full" style="margin:12px 0">
                 <div class="modal-actions">
-                    <button class="btn btn-primary" onclick="linkMoltbook()">Link Account</button>
-                    <button class="btn btn-ghost" onclick="closeMoltbookModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="linkMoltbook()">LINK</button>
+                    <button class="btn btn-ghost" onclick="closeMoltbookModal()">CANCEL</button>
                 </div>
             </div>
         `;
@@ -227,7 +224,7 @@ async function linkMoltbook() {
     if (!key) { showToast('Enter your Moltbook API key', true); return; }
     try {
         const result = await apiCall('POST', '/api/moltbook/link', { moltbook_api_key: key });
-        showToast('Linked to Moltbook as ' + result.moltbook_username + '!');
+        showToast('Linked to Moltbook as ' + result.moltbook_username);
         closeMoltbookModal();
     } catch (e) {
         showToast(e.message || 'Failed to link Moltbook', true);
@@ -249,8 +246,19 @@ function closeMoltbookModal() {
     if (modal) modal.remove();
 }
 
+// ---- Terminal Topbar Clock ----
+
+function updateTopbarTime() {
+    const el = document.getElementById('topbar-time');
+    if (!el) return;
+    const now = new Date();
+    el.textContent = now.toLocaleTimeString('en-US', { hour12: false }) + ' UTC' + (now.getTimezoneOffset() > 0 ? '-' : '+') + Math.abs(now.getTimezoneOffset() / 60);
+}
+
 // ---- Init ----
 
 document.addEventListener('DOMContentLoaded', () => {
     updateAuthUI();
+    updateTopbarTime();
+    setInterval(updateTopbarTime, 1000);
 });

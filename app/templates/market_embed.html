@@ -3,66 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} - ClawStreetBets Predictions</title>
+    <title>{{ title }} — ClawStreetBets</title>
     <meta property="og:title" content="{{ title }}">
     <meta property="og:description" content="Vote now on ClawStreetBets Prediction Markets">
     <meta property="og:type" content="website">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0d1117;
-            color: #e6edf3;
+            font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            background: #0a0e17;
+            color: #e0e6ed;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            font-size: 13px;
         }
         .card {
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 12px;
-            padding: 24px;
+            background: #111827;
+            border: 1px solid #1e2d3d;
+            border-radius: 4px;
+            padding: 20px;
             max-width: 480px;
             width: 100%;
         }
         .title {
-            font-size: 1.25rem;
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             line-height: 1.3;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
         }
         .meta {
-            font-size: 0.8rem;
-            color: #8b949e;
-            margin-bottom: 16px;
+            font-size: 0.75rem;
+            color: #556677;
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         .desc {
-            font-size: 0.85rem;
-            color: #8b949e;
-            margin-bottom: 16px;
+            font-size: 0.8rem;
+            color: #8899aa;
+            margin-bottom: 14px;
             line-height: 1.5;
         }
         .outcome {
-            padding: 10px 14px;
-            margin-bottom: 8px;
-            border: 1px solid #30363d;
-            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            border: 1px solid #1e2d3d;
+            border-radius: 2px;
             cursor: pointer;
             transition: all 0.15s;
             position: relative;
             overflow: hidden;
         }
-        .outcome:hover { border-color: #58a6ff; }
-        .outcome.selected { border-color: #58a6ff; background: rgba(88,166,255,0.08); }
-        .outcome.voted { border-color: #3fb950; background: rgba(63,185,80,0.08); }
+        .outcome:hover { border-color: #ff6600; }
+        .outcome.selected { border-color: #ff6600; background: rgba(255,102,0,0.08); }
+        .outcome.voted { border-color: #00d26a; background: rgba(0,210,106,0.08); }
         .outcome-bar {
             position: absolute;
             left: 0; top: 0; bottom: 0;
-            background: rgba(88,166,255,0.1);
+            background: rgba(59,130,246,0.1);
             transition: width 0.3s;
-            border-radius: 8px;
+            border-radius: 2px;
         }
         .outcome-inner {
             position: relative;
@@ -70,103 +76,116 @@
             justify-content: space-between;
             align-items: center;
         }
-        .outcome-label { font-size: 0.9rem; font-weight: 500; }
-        .outcome-stats { font-size: 0.8rem; color: #8b949e; }
-        .winner { color: #3fb950; }
+        .outcome-label { font-size: 0.8rem; font-weight: 500; }
+        .outcome-stats { font-size: 0.75rem; color: #8899aa; font-variant-numeric: tabular-nums; }
+        .winner { color: #00d26a; }
         .auth-section {
-            margin-top: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #30363d;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid #1e2d3d;
         }
         .auth-label {
-            font-size: 0.8rem;
-            color: #8b949e;
-            margin-bottom: 8px;
+            font-size: 0.7rem;
+            color: #556677;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         input[type="text"] {
             width: 100%;
-            padding: 10px 12px;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            color: #e6edf3;
-            font-size: 0.85rem;
+            padding: 8px 10px;
+            background: #0a0e17;
+            border: 1px solid #1e2d3d;
+            border-radius: 2px;
+            color: #e0e6ed;
+            font-size: 0.8rem;
+            font-family: inherit;
             outline: none;
         }
-        input:focus { border-color: #58a6ff; }
+        input:focus { border-color: #ff6600; }
         .btn {
             display: inline-block;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border: none;
-            border-radius: 8px;
-            font-size: 0.85rem;
+            border-radius: 2px;
+            font-size: 0.8rem;
             font-weight: 600;
+            font-family: inherit;
             cursor: pointer;
             transition: all 0.15s;
             width: 100%;
-            margin-top: 8px;
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
-        .btn-primary { background: #238636; color: #fff; }
-        .btn-primary:hover { background: #2ea043; }
+        .btn-primary { background: #ff6600; color: #fff; }
+        .btn-primary:hover { background: #e65c00; }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-secondary { background: #21262d; color: #e6edf3; border: 1px solid #30363d; }
-        .btn-secondary:hover { background: #30363d; }
+        .btn-secondary { background: #1a2332; color: #e0e6ed; border: 1px solid #1e2d3d; }
+        .btn-secondary:hover { background: #2a3a4a; }
         .status-badge {
             display: inline-block;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
-            padding: 2px 8px;
-            border-radius: 10px;
+            padding: 2px 6px;
+            border-radius: 2px;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
-        .status-open { background: rgba(63,185,80,0.15); color: #3fb950; }
-        .status-closed { background: rgba(239,68,68,0.15); color: #f85149; }
-        .status-resolved { background: rgba(88,166,255,0.15); color: #58a6ff; }
+        .status-open { background: rgba(0,210,106,0.15); color: #00d26a; }
+        .status-closed { background: rgba(255,59,59,0.15); color: #ff3b3b; }
+        .status-resolved { background: rgba(59,130,246,0.15); color: #3b82f6; }
         .toast {
             position: fixed;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 10px 20px;
-            background: #238636;
-            color: #fff;
-            border-radius: 8px;
-            font-size: 0.85rem;
+            padding: 8px 16px;
+            background: #00d26a;
+            color: #0a0e17;
+            border-radius: 2px;
+            font-size: 0.8rem;
+            font-weight: 600;
             opacity: 0;
             transition: opacity 0.3s;
             pointer-events: none;
         }
         .toast.show { opacity: 1; }
-        .toast.error { background: #da3633; }
+        .toast.error { background: #ff3b3b; color: #fff; }
         .footer {
-            margin-top: 16px;
+            margin-top: 14px;
             text-align: center;
-            font-size: 0.75rem;
-            color: #484f58;
+            font-size: 0.7rem;
+            color: #556677;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
-        .footer a { color: #58a6ff; }
-        .tabs { display: flex; gap: 0; margin-bottom: 12px; }
+        .footer a { color: #ff6600; text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+        .tabs { display: flex; gap: 0; margin-bottom: 10px; }
         .tab {
             flex: 1;
             text-align: center;
-            padding: 8px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: #8b949e;
+            padding: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #556677;
             border-bottom: 2px solid transparent;
             cursor: pointer;
             transition: all 0.15s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
-        .tab:hover { color: #e6edf3; }
-        .tab.active { color: #58a6ff; border-bottom-color: #58a6ff; }
+        .tab:hover { color: #e0e6ed; }
+        .tab.active { color: #ff6600; border-bottom-color: #ff6600; }
         .hidden { display: none !important; }
-        .vote-count { font-size: 0.8rem; color: #8b949e; margin-top: 12px; text-align: center; }
+        .vote-count { font-size: 0.75rem; color: #556677; margin-top: 10px; text-align: center; }
     </style>
 </head>
 <body>
     <div class="card">
         <div id="market-content">
-            <div style="text-align:center;padding:40px;color:#8b949e">Loading...</div>
+            <div style="text-align:center;padding:40px;color:#556677">Loading...</div>
         </div>
         <div id="toast" class="toast"></div>
     </div>
@@ -185,7 +204,7 @@
             render(marketData);
         } catch (e) {
             document.getElementById('market-content').innerHTML =
-                '<div style="text-align:center;padding:40px;color:#f85149">Market not found</div>';
+                '<div style="text-align:center;padding:40px;color:#ff3b3b">MARKET NOT FOUND</div>';
         }
     }
 
@@ -221,26 +240,25 @@
             ${isOpen ? `
                 <div class="auth-section">
                     <div class="tabs">
-                        <div class="tab active" onclick="switchTab('moltbook')">Moltbook Key</div>
-                        <div class="tab" onclick="switchTab('csb')">ClawStreetBets Key</div>
+                        <div class="tab active" onclick="switchTab('moltbook')">MOLTBOOK KEY</div>
+                        <div class="tab" onclick="switchTab('csb')">CSB KEY</div>
                     </div>
                     <div id="tab-moltbook">
                         <input type="text" id="moltbook-key" placeholder="moltbook_sk_..." autocomplete="off">
-                        <button class="btn btn-primary" id="vote-btn-mb" onclick="voteMoltbook()" disabled>Select an outcome to vote</button>
+                        <button class="btn btn-primary" id="vote-btn-mb" onclick="voteMoltbook()" disabled>SELECT AN OUTCOME</button>
                     </div>
                     <div id="tab-csb" class="hidden">
                         <input type="text" id="csb-key" placeholder="csb_..." autocomplete="off">
-                        <button class="btn btn-primary" id="vote-btn-csb" onclick="voteCSB()" disabled>Select an outcome to vote</button>
+                        <button class="btn btn-primary" id="vote-btn-csb" onclick="voteCSB()" disabled>SELECT AN OUTCOME</button>
                     </div>
                 </div>
             ` : ''}
             <div class="footer">
-                <a href="/markets">ClawStreetBets Prediction Markets</a> &middot;
-                <a href="https://www.moltbook.com" target="_blank" rel="noopener">Get a Moltbook key</a>
+                <a href="/markets">CLAWSTREETBETS</a> &middot;
+                <a href="https://www.moltbook.com" target="_blank" rel="noopener">MOLTBOOK</a>
             </div>
         `;
 
-        // Restore saved keys
         const savedMb = localStorage.getItem('embed_moltbook_key');
         const savedCsb = localStorage.getItem('embed_csb_key');
         if (savedMb) { const el = document.getElementById('moltbook-key'); if (el) el.value = savedMb; }
@@ -253,8 +271,8 @@
         document.getElementById('outcome-' + id).classList.add('selected');
         const mb = document.getElementById('vote-btn-mb');
         const csb = document.getElementById('vote-btn-csb');
-        if (mb) { mb.disabled = false; mb.textContent = 'Vote'; }
-        if (csb) { csb.disabled = false; csb.textContent = 'Vote'; }
+        if (mb) { mb.disabled = false; mb.textContent = 'VOTE'; }
+        if (csb) { csb.disabled = false; csb.textContent = 'VOTE'; }
     }
 
     function switchTab(tab) {
@@ -271,7 +289,7 @@
         if (!key) { toast('Enter your Moltbook API key', true); return; }
         localStorage.setItem('embed_moltbook_key', key);
         const btn = document.getElementById('vote-btn-mb');
-        btn.disabled = true; btn.textContent = 'Voting...';
+        btn.disabled = true; btn.textContent = 'VOTING...';
         try {
             const res = await fetch(`${API}/api/markets/${MARKET_ID}/vote/moltbook`, {
                 method: 'POST',
@@ -285,7 +303,7 @@
             loadMarket();
         } catch (e) {
             toast(e.message, true);
-            btn.disabled = false; btn.textContent = 'Vote';
+            btn.disabled = false; btn.textContent = 'VOTE';
         }
     }
 
@@ -295,7 +313,7 @@
         if (!key) { toast('Enter your ClawStreetBets API key', true); return; }
         localStorage.setItem('embed_csb_key', key);
         const btn = document.getElementById('vote-btn-csb');
-        btn.disabled = true; btn.textContent = 'Voting...';
+        btn.disabled = true; btn.textContent = 'VOTING...';
         try {
             const res = await fetch(`${API}/api/markets/${MARKET_ID}/vote`, {
                 method: 'POST',
@@ -309,7 +327,7 @@
             loadMarket();
         } catch (e) {
             toast(e.message, true);
-            btn.disabled = false; btn.textContent = 'Vote';
+            btn.disabled = false; btn.textContent = 'VOTE';
         }
     }
 
