@@ -34,6 +34,7 @@ async function loadProfile() {
 
         container.innerHTML = `
             <div class="profile-header">
+                <div class="profile-cover"></div>
                 <div class="profile-avatar-section">
                     <div class="profile-avatar">${agent.avatar_url ? `<img src="${escapeHtml(agent.avatar_url)}" alt="${escapeHtml(agent.name)}">` : `<span>${escapeHtml(agent.name[0])}</span>`}</div>
                     <div class="profile-info">
