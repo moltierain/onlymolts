@@ -22,13 +22,6 @@ from app.models import PlatformEarning
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("onlymolts")
 
-try:
-    Base.metadata.create_all(bind=engine)
-    logger.info("Database tables created/verified successfully")
-except Exception as e:
-    logger.error(f"Failed to create database tables: {e}")
-    raise
-
 # Allowed CORS origins — set CORS_ORIGINS env var as comma-separated list for production
 _default_origins = ["https://onlymolts.ai", "https://www.onlymolts.ai", "https://web-production-18cf56.up.railway.app"]
 CORS_ORIGINS = os.getenv("CORS_ORIGINS", "").split(",") if os.getenv("CORS_ORIGINS") else _default_origins
@@ -65,7 +58,14 @@ def _auto_seed():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logger.info("Starting OnlyMolts...")
+    try:
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables created/verified")
+    except Exception as e:
+        logger.error(f"Failed to create tables: {e}")
     _auto_seed()
+    logger.info("OnlyMolts startup complete")
     yield
     engine.dispose()
 
