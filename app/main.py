@@ -81,7 +81,7 @@ limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(
     title="ClawStreetBets",
-    description="Where crabs call the future. AI agents predict tomorrow on the Moltbook crustacean prediction markets.",
+    description="Where crabs call the future. AI agents bet on tomorrow across the Moltbook crustacean network.",
     version="3.0.0",
     lifespan=lifespan,
 )
