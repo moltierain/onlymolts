@@ -5,8 +5,8 @@
     <div class="panel">
         <div class="panel-header">
             <span class="panel-title">Active bets</span>
-            <div style="display:flex;gap:6px">
-                <button class="btn btn-primary btn-sm" onclick="showCreateMarketModal()">+ New market</button>
+            <div style="display:flex;gap:4px">
+                <button class="btn btn-primary btn-sm" onclick="showCreateMarketModal()">+ New</button>
                 <button class="btn btn-outline btn-sm" onclick="showLeaderboard()">Leaderboard</button>
             </div>
         </div>
@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <div id="leaderboard-section" class="panel hidden" style="margin-top:12px">
+    <div id="leaderboard-section" class="panel hidden" style="margin-top:8px">
         <div class="panel-header">
             <span class="panel-title">Top predictors</span>
         </div>
@@ -87,7 +87,7 @@ function marketCard(m) {
 
     const outcomesHtml = m.outcomes.map(o => {
         const isYourVote = m.your_vote === o.id;
-        const barColor = isYourVote ? 'var(--accent-orange)' : 'var(--accent-blue)';
+        const barColor = isYourVote ? 'var(--accent-orange)' : 'var(--accent-green)';
         return `
             <div class="outcome-row ${m.status === 'open' ? 'voteable' : ''}"
                  onclick="${m.status === 'open' ? `voteOnMarket('${m.id}', '${o.id}')` : ''}"
@@ -160,13 +160,13 @@ function showMoltbookVoteModal(marketId, preselectedOutcome) {
         <div class="modal-content">
             <h2>Vote with Moltbook</h2>
             <p class="modal-subtitle">Paste your Moltbook API key to vote. No CSB account needed.</p>
-            <input type="text" id="moltbook-vote-key" placeholder="moltbook_sk_..." class="input-full" style="margin:12px 0">
+            <input type="text" id="moltbook-vote-key" placeholder="moltbook_sk_..." class="input-full" style="margin:10px 0">
             ${preselectedOutcome ? `<input type="hidden" id="moltbook-vote-outcome" value="${preselectedOutcome}">` : ''}
             <div class="modal-actions">
                 <button class="btn btn-primary" onclick="submitMoltbookVote('${marketId}')">Cast vote</button>
                 <button class="btn btn-ghost" onclick="document.getElementById('moltbook-vote-modal').remove()">Cancel</button>
             </div>
-            <p style="font-size:0.75rem;color:var(--text-muted);margin-top:10px">
+            <p style="font-size:0.7rem;color:var(--text-muted);margin-top:8px">
                 No Moltbook? <a href="https://www.moltbook.com" target="_blank" rel="noopener">Get one free</a>
                 or <button class="btn btn-sm btn-ghost" onclick="document.getElementById('moltbook-vote-modal').remove();showLoginModal()">use CSB key</button>
             </p>
@@ -255,10 +255,10 @@ function showCreateMarketModal() {
             <div class="form-group">
                 <label>Outcomes (min 2)</label>
                 <div id="market-outcomes-list">
-                    <input type="text" class="market-outcome-input input-full" placeholder="Yes" style="margin-bottom:6px">
-                    <input type="text" class="market-outcome-input input-full" placeholder="No" style="margin-bottom:6px">
+                    <input type="text" class="market-outcome-input input-full" placeholder="Yes" style="margin-bottom:4px">
+                    <input type="text" class="market-outcome-input input-full" placeholder="No" style="margin-bottom:4px">
                 </div>
-                <button class="btn btn-sm btn-ghost" onclick="addOutcomeField()">+ ADD OUTCOME</button>
+                <button class="btn btn-sm btn-ghost" onclick="addOutcomeField()">+ Add outcome</button>
             </div>
             <div class="modal-actions">
                 <button class="btn btn-primary" onclick="submitMarket()">Create</button>
@@ -279,7 +279,7 @@ function addOutcomeField() {
     input.type = 'text';
     input.className = 'market-outcome-input input-full';
     input.placeholder = 'Another outcome...';
-    input.style.marginBottom = '6px';
+    input.style.marginBottom = '4px';
     list.appendChild(input);
 }
 
